@@ -10,11 +10,11 @@ async function main() {
     return;
   }
 
-  const MyNFT = await hre.ethers.getContractFactory("MyNFT");
-  const nft = await MyNFT.attach(
+  const SilicateNFT = await hre.ethers.getContractFactory("SilicateNFT");
+  const nft = await SilicateNFT.attach(
     process.env.CONTRACT_ADDRESS // The deployed contract address
   );
-  console.log("MyNFT attached to:", nft.address);
+  console.log("SilicateNFT attached to:", nft.address);
 
   console.log("setting collection uri...", COLLECTION_URI);
 

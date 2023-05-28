@@ -4,15 +4,17 @@ const hre = require("hardhat");
 async function main() {
   const PROVENANCE_HASH = process.env.PROVENANCE_HASH;
   if (!PROVENANCE_HASH) {
-    console.log("PROVENANCE_HASH is required. Please add it to your environment.");
+    console.log(
+      "PROVENANCE_HASH is required. Please add it to your environment."
+    );
     return;
   }
 
-  const MyNFT = await hre.ethers.getContractFactory("MyNFT");
-  const nft = await MyNFT.attach(
+  const SilicateNFT = await hre.ethers.getContractFactory("SilicateNFT");
+  const nft = await SilicateNFT.attach(
     process.env.CONTRACT_ADDRESS // The deployed contract address
   );
-  console.log("MyNFT attached to:", nft.address);
+  console.log("SilicateNFT attached to:", nft.address);
 
   console.log("setting Provenance Hash..", PROVENANCE_HASH);
 
