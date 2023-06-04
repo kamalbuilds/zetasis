@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,9 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.11",
+    "@chakra-ui/react": "^2.3.5",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "ethers": "^5.7.2",
+    "framer-motion": "^6.5.1",
     "next": "13.1.6",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-lottie": "^1.2.3",
+    "wagmi": "^0.11.6"
   },
   "devDependencies": {
     "@types/node": "18.14.0",
