@@ -1,0 +1,355 @@
+.main {
+  min-height: 100vh;
+  padding: 0rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.subtitleContainer {
+  width: 100%;
+  position: relative;
+}
+
+.fadeLeft {
+  position: absolute;
+  width: 50%;
+  height: 100px;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  background: linear-gradient(
+    to left,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+.fadeRight {
+  position: absolute;
+  width: 50%;
+  height: 100px;
+  top: 0;
+  right: 0;
+  z-index: 5;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+.subtitle {
+  display: block;
+  width: 100%;
+  transform: translateX(100%);
+  animation: move 20s linear infinite;
+
+  font-family: "Fahkwang";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 66px;
+  line-height: 66px;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+@keyframes move {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.connectButton {
+  position: absolute !important;
+  bottom: 14%;
+  width: 227px !important;
+  height: 50px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.connectButton:hover {
+  opacity: 1;
+}
+
+.successButton {
+  width: 200px !important;
+  height: 50px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.a:link {
+  text-decoration: none !important;
+}
+
+.successButton:hover {
+  opacity: 1;
+}
+
+.lottieContainer {
+  position: absolute;
+  top: -50px;
+}
+
+.tokenImage {
+  height: 300px;
+}
+
+.collectionImage {
+  height: 300px;
+}
+
+.description {
+  width: 300px;
+  text-align: center;
+  padding-bottom: 1rem;
+}
+
+.button {
+  font-weight: 400 !important;
+  width: 240px !important;
+  height: 56px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.button:hover {
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.optionContainer {
+  opacity: 0.8;
+  transition: opacity 0.2s ease-in-out;
+  padding: 0 6rem;
+}
+
+.optionContainer:hover {
+  opacity: 1;
+}
+
+.divider {
+  width: 0.5px;
+  height: 221px;
+  background: linear-gradient(
+    180deg,
+    rgba(217, 217, 217, 0) 0%,
+    #d9d9d9 33.33%,
+    #d9d9d9 65.1%,
+    rgba(217, 217, 217, 0) 100%,
+    rgba(217, 217, 217, 0) 100%
+  );
+}
+
+.input {
+  font-weight: 400 !important;
+  width: 420px !important;
+  height: 56px !important;
+  background: linear-gradient(to right, rgba(8, 8, 8, 1), rgba(8, 8, 8, 0.9))
+      padding-box,
+    linear-gradient(
+        to right,
+        rgb(79, 79, 79),
+        rgb(154, 154, 154),
+        rgb(79, 79, 79),
+        rgb(28, 28, 28)
+      )
+      border-box !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.subinput {
+  font-weight: 400 !important;
+  width: 210px !important;
+  height: 56px !important;
+  background: linear-gradient(rgb(12, 12, 12), rgb(12, 12, 12)) padding-box,
+    linear-gradient(
+        to right,
+        rgb(79, 79, 79),
+        rgb(154, 154, 154),
+        rgb(79, 79, 79),
+        rgb(28, 28, 28)
+      )
+      border-box !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.uploadContainer {
+  position: relative;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 31px;
+  border: 3px solid #ffffff;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  color: white;
+  z-index: 0;
+  cursor: pointer;
+
+  background: linear-gradient(rgb(12, 12, 12), rgb(12, 12, 12)) padding-box,
+    linear-gradient(
+        to bottom right,
+        rgb(209, 209, 209),
+        rgb(79, 79, 79),
+        rgb(28, 28, 28)
+      )
+      border-box !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.uploadContent {
+  position: absolute;
+  top: 210px;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0 3rem;
+  z-index: 1;
+  color: white;
+  gap: 0.5rem;
+}
+
+.uploadInput {
+  width: 400px;
+  height: 400px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 31px;
+  color: white;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.uploadInput::-webkit-file-upload-button {
+  display: none;
+}
+
+.uploadInput[type="file"] {
+  color: transparent;
+}
+
+.uploadTextContainer {
+  position: absolute;
+  top: 130px;
+  width: 100%;
+  justify-content: space-between;
+  padding: 0 3rem;
+  z-index: 1;
+  color: white;
+  gap: 0.5rem;
+}
+
+.uploadTitle {
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 20px;
+  padding-top: 1rem;
+}
+
+.uploadTitle2 {
+  font-size: 16px;
+  line-height: 16px;
+  opacity: 0.8;
+}
+
+.uploadSubtitle {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 14px;
+  opacity: 0.4;
+}
+
+.inputSubtitle {
+  font-size: 14px;
+}
+
+.previewContainer {
+  position: relative;
+
+  background: linear-gradient(rgb(12, 12, 12), rgb(12, 12, 12)) padding-box,
+    linear-gradient(
+        to bottom right,
+        rgb(209, 209, 209),
+        rgb(79, 79, 79),
+        rgb(28, 28, 28)
+      )
+      border-box !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 31px;
+  color: white;
+  z-index: 0;
+  cursor: pointer;
+  width: 400px;
+  height: 400px;
+}
