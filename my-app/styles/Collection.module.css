@@ -1,0 +1,206 @@
+.main {
+  min-height: 100vh;
+  padding: 6rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.successContainer {
+  min-height: 100vh;
+  padding: 0rem 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.lottieContainer {
+  position: absolute;
+  top: -50px;
+}
+
+.successButton {
+  width: 200px !important;
+  height: 50px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.a:link {
+  text-decoration: none !important;
+}
+
+.successButton:hover {
+  opacity: 1;
+}
+
+.gridContainer {
+  width: 90%;
+  overflow-y: scroll;
+  height: 88vh;
+  padding: 0 0 2rem 0;
+}
+
+.title {
+  padding-top: 1rem;
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 29px;
+}
+
+.owner {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  opacity: 0.8;
+}
+
+.description {
+  padding: 1rem 0;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 17px;
+}
+
+.explorerIcon {
+  opacity: 0.9;
+  width: 25px;
+  height: 25px;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.explorerIcon:hover {
+  opacity: 1;
+}
+
+.ipfsIcon {
+  opacity: 50%;
+  width: 30px;
+  height: 30px;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.ipfsIcon:hover {
+  opacity: 80%;
+}
+
+.webIcon {
+  opacity: 50%;
+  width: 24px;
+  height: 24px;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.webIcon:hover {
+  opacity: 80%;
+}
+
+.collectionCover {
+  width: 200px;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(60, 60, 60), rgb(0, 0, 0)) border-box !important;
+  border: 1px solid transparent !important;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.detailContainer {
+  width: 50%;
+  height: 84vh;
+  justify-content: space-between !important;
+  padding: 0 4rem;
+}
+
+.detailContentContainer {
+  width: 100%;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+.tokenImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.tokenCardContainer {
+  width: 200px;
+  background: #000000;
+  border: 0.5px solid #363636;
+
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(60, 60, 60), rgb(0, 0, 0)) border-box !important;
+  border: 1px solid transparent !important;
+
+  border-radius: 20px;
+  overflow: hidden;
+
+  padding: 0 0 1rem 0;
+}
+
+.tokenTitle {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+}
+
+.tokenId {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #bdbdbd;
+}
+
+.tokenOwnerLabel {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 12px;
+  color: #bdbdbd;
+}
+
+.tokenOwner {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 12px;
+  color: #bdbdbd;
+}
+
+.mintButton {
+  width: 100% !important;
+  height: 50px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.mintButton:hover {
+  opacity: 1;
+}
+
+.mintLabel {
+  font-size: 14px;
+  opacity: 0.7;
+}
