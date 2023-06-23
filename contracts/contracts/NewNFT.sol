@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract SilicateNFT is ERC721, IERC2981, Ownable, ReentrancyGuard {
+contract NewNFT is ERC721, IERC2981, Ownable, ReentrancyGuard {
     using Counters for Counters.Counter;
     using Address for address payable;
     using Strings for uint256;
@@ -40,12 +40,12 @@ contract SilicateNFT is ERC721, IERC2981, Ownable, ReentrancyGuard {
         PublicSale
     }
 
-    SaleState public saleState = SaleState.Inactive;
+    SaleState public saleState = SaleState.PublicSale;
 
     address public royaltyReceiverAddress;
 
     // ============ CUSTOMIZE VALUES BELOW ============
-    uint256 public constant MAX_TOTAL_SUPPLY = 10000;
+    uint256 public immutable MAX_TOTAL_SUPPLY;
 
     uint256 public constant MAX_PRE_SALE_MINTS = 3;
 
@@ -84,9 +84,17 @@ contract SilicateNFT is ERC721, IERC2981, Ownable, ReentrancyGuard {
 
     // ================================================
 
-    constructor(address _royaltyReceiverAddress)
-        ERC721("Silicate Collection 1", "SILICATE")
-    {
+    constructor(
+        string memory _name,
+        string memory _symbol,
+        uint256 _tokenSupply,
+        string memory _collectionURI,
+        string memory _baseURI,
+        address _royaltyReceiverAddress
+    ) ERC721(_name, _symbol) {
+        MAX_TOTAL_SUPPLY = _tokenSupply;
+        collectionURI = _collectionURI;
+        baseURI = _baseURI;
         royaltyReceiverAddress = _royaltyReceiverAddress;
     }
 
@@ -275,10 +283,7 @@ contract SilicateNFT is ERC721, IERC2981, Ownable, ReentrancyGuard {
         if (bytes(_tokenURIs[tokenId]).length != 0) {
             return _tokenURIs[tokenId];
         } else {
-            return
-                string(
-                    abi.encodePacked(baseURI, "/", tokenId.toString(), ".json")
-                );
+            return string(abi.encodePacked(baseURI, "/", tokenId.toString()));
         }
     }
 
