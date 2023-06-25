@@ -12,11 +12,26 @@ import {
 import Link from "next/link";
 import withTransition from "@components/withTransition";
 import { useAccount, useConnect } from "wagmi";
+import { useCallback, useEffect } from "react";
+import { fetchUser, createUser } from "@utils/web3";
 
 const Home: NextPage = () => {
   const { connector, isConnected, address } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
+
+  const createNewUser = useCallback(async () => {
+    const fetchedUser = await fetchUser(address);
+    if (!fetchedUser) {
+      await createUser(address);
+    }
+  }, [address]);
+
+  useEffect(() => {
+    if (isConnected) {
+      createNewUser();
+    }
+  });
 
   return (
     <div className={styles.container}>
@@ -51,7 +66,8 @@ const Home: NextPage = () => {
                 className={styles.tokenImage}
               ></Image>
               <Text className={styles.description}>
-                Lorem iptus lorem iptus hello fresh bello mellow yadi yada
+                Create your own NFT, a digital asset that represents ownership
+                of a unique item or piece of content.
               </Text>
 
               <Link href="/create?type=token">
@@ -66,7 +82,8 @@ const Home: NextPage = () => {
                 className={styles.collectionImage}
               ></Image>
               <Text className={styles.description}>
-                Lorem iptus lorem iptus hello fresh bello mellow yadi yada
+                Create your own NFT collection, an entire series of digital
+                assets to share ownership with the world.
               </Text>
               <Link href="/create?type=collection">
                 <Button className={styles.button}>CREATE COLLECTION</Button>

@@ -12,51 +12,131 @@ import withTransition from "@components/withTransition";
 import { collections, tokens } from "@data/static";
 import styles from "@styles/Collection.module.css";
 import { abridgeAddress } from "@utils/abridgeAddress";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import {
+  useAccount,
+  useContractRead,
+  useContractWrite,
+  usePrepareContractWrite,
+} from "wagmi";
+import NewNFT from "@data/NewNFT.json";
 import SilicateNFT from "@data/SilicateNFT.json";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SuccessLottie from "@components/SuccessLottie";
 
 function Collection() {
   const router = useRouter();
+  const { address } = useAccount();
+  const [collectionMetadata, setCollectionMetadata] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
-  const [isViewSuccessPage, setViewSuccessPage] = useState<boolean>(false);
-  const { id } = router.query;
-  const tokensMinted = 1;
-  const collection = collections[id as string];
+  const [tokens, setTokens] = useState<any[]>([]);
+  const { id: collectionAddress } = router.query;
 
   const { config } = usePrepareContractWrite({
-    address: "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: SilicateNFT.abi,
+    address:
+      (collectionAddress as `0x${string}`) ??
+      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
+    abi: NewNFT.abi,
     functionName: "mint()",
+  });
+
+  const { data: collectionURI } = useContractRead({
+    address:
+      (collectionAddress as `0x${string}`) ??
+      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
+    abi: NewNFT.abi,
+    functionName: "contractURI",
+  });
+
+  const { data: baseURI } = useContractRead({
+    address:
+      (collectionAddress as `0x${string}`) ??
+      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
+    abi: NewNFT.abi,
+    functionName: "getBaseURI",
   });
 
   const { data, isSuccess, write: mint } = useContractWrite(config);
 
   function handleMint() {
+    console.log("mint:", mint);
     setLoading(true);
     mint();
   }
 
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        setViewSuccessPage(true);
-        setLoading(false);
-      }, 3000);
-    }
-  }, [isSuccess]);
+  const fetchCollection = useCallback(async () => {
+    if (!collectionURI) return;
+    const response = await fetch(collectionURI as string);
+    const result = await response.json();
 
-  if (!collection)
+    setCollectionMetadata(result);
+  }, [collectionURI]);
+
+  const { data: lastTokenId } = useContractRead({
+    address:
+      (collectionAddress as `0x${string}`) ??
+      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
+    abi: NewNFT.abi,
+    functionName: "getLastTokenId",
+  });
+
+  const { data: tokenSupply } = useContractRead({
+    address:
+      (collectionAddress as `0x${string}`) ??
+      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
+    abi: NewNFT.abi,
+    functionName: "MAX_TOTAL_SUPPLY",
+  });
+
+  const fetchTokens = useCallback(async () => {
+    if (!baseURI) return;
+    const fetchedTokens = [];
+    for (let i = 1; i <= lastTokenId; i++) {
+      const response = await fetch(`${baseURI}/${1}` as string);
+      const result = await response.json();
+      fetchedTokens.push(result);
+    }
+    setTokens(fetchedTokens);
+  }, [baseURI, lastTokenId]);
+
+  useEffect(() => {
+    if (!collectionMetadata) {
+      fetchCollection();
+    }
+    if (tokens.length === 0) {
+      fetchTokens();
+    }
+  }, [
+    baseURI,
+    collectionMetadata,
+    fetchCollection,
+    fetchTokens,
+    tokens.length,
+  ]);
+
+  const navigationLink = useMemo(
+    () =>
+      lastTokenId
+        ? `/collection/${collectionAddress}/${
+            parseInt(lastTokenId as string, 10) + 1
+          }`
+        : `/collection/${collectionAddress}`,
+    [collectionAddress, lastTokenId]
+  );
+
+  if (collectionAddress === "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2") {
+    return <SampleCollection id={collectionAddress} />;
+  }
+
+  if (!collectionMetadata)
     return (
-      <VStack className={styles.loadingContainer}>
+      <HStack className={styles.main} h="100vh">
         <Spinner color="white" size="xl" />
-      </VStack>
+      </HStack>
     );
 
-  if (false) {
+  if (isSuccess) {
     return (
       <main className={styles.successContainer}>
         <VStack>
@@ -83,7 +163,7 @@ function Collection() {
             >
               <Button className={styles.successButton}>View transaction</Button>
             </ChakraLink>
-            <Link href="/collection/1/1">
+            <Link href={`/collection/${collectionAddress}/${navigationLink}`}>
               <Button className={styles.successButton}>View token</Button>
             </Link>
           </HStack>
@@ -91,6 +171,110 @@ function Collection() {
       </main>
     );
   }
+
+  return (
+    <HStack className={styles.main}>
+      <VStack className={styles.detailContainer}>
+        <VStack className={styles.detailContentContainer}>
+          <Image
+            alt="silicate collection"
+            src={collectionMetadata.image}
+            className={styles.collectionCover}
+          ></Image>
+          <Text className={styles.title}>{collectionMetadata.name}</Text>
+          <Text className={styles.owner}>
+            {`by ${abridgeAddress(collectionMetadata.fee_recipient)}`}
+          </Text>
+          <Text className={styles.description}>
+            {collectionMetadata.description}
+          </Text>
+          <HStack gap={1}>
+            <ChakraLink
+              href={`https://explorer.testnet.mantle.xyz/address/${collectionAddress}`}
+              isExternal
+            >
+              <Image
+                alt="explorer"
+                src="/explorer.png"
+                className={styles.explorerIcon}
+              ></Image>
+            </ChakraLink>
+            <ChakraLink
+              href={
+                (baseURI as string) ??
+                "https://bafybeiavfji7bfrip3dbg23laqgkwi7f2sntmp42tvr7qdecd2hw6a2zky.ipfs.w3s.link/1.json"
+              }
+              isExternal
+            >
+              <Image
+                alt="ipfs"
+                src="/ipfs.png"
+                className={styles.ipfsIcon}
+              ></Image>
+            </ChakraLink>
+            <ChakraLink href="https://www.silicate.dev/" isExternal>
+              <Image
+                alt="web"
+                src="/website.png"
+                className={styles.webIcon}
+              ></Image>
+            </ChakraLink>
+          </HStack>
+        </VStack>
+        {lastTokenId < tokenSupply && (
+          <VStack w="100%">
+            <Button className={styles.mintButton} onClick={handleMint}>
+              {" "}
+              {isLoading ? <Spinner color="white" /> : "MINT"}
+            </Button>
+            <Text
+              className={styles.mintLabel}
+            >{`${lastTokenId}/10000 Minted`}</Text>
+          </VStack>
+        )}
+      </VStack>
+      <VStack className={styles.gridContainer}>
+        {lastTokenId == 0 ? (
+          <VStack height="70vh" justifyContent="center">
+            <Text>No tokens minted yet</Text>
+          </VStack>
+        ) : (
+          <SimpleGrid columns={4} w="100%" gap={3}>
+            {tokens.map(({ image, name }, idx) => (
+              <Link
+                href={`/collection/${collectionAddress}/${idx + 1}`}
+                key={idx}
+              >
+                <VStack className={styles.tokenCardContainer}>
+                  <Image
+                    alt={name}
+                    src={`https:ipfs.io/ipfs/${image.split("//")[1]}`}
+                    className={styles.tokenImage}
+                  ></Image>
+                  <VStack w="100%" padding="4px 12px 2px 12px">
+                    <HStack w="100%" justifyContent="space-between">
+                      <Text className={styles.tokenTitle}>{name}</Text>
+                      <Text className={styles.tokenId}>{`ID: ${idx + 1}`}</Text>
+                    </HStack>
+                    <HStack w="100%">
+                      <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
+                      <Text className={styles.tokenOwner}>
+                        {abridgeAddress(address)}
+                      </Text>
+                    </HStack>
+                  </VStack>
+                </VStack>
+              </Link>
+            ))}
+          </SimpleGrid>
+        )}
+      </VStack>
+    </HStack>
+  );
+}
+
+function SampleCollection({ id }) {
+  const collection = collections[id as string];
 
   return (
     <HStack className={styles.main}>
@@ -136,50 +320,33 @@ function Collection() {
             </ChakraLink>
           </HStack>
         </VStack>
-        {collection.mintable && (
-          <VStack w="100%">
-            <Button className={styles.mintButton} onClick={handleMint}>
-              {" "}
-              {isLoading ? <Spinner color="white" /> : "MINT"}
-            </Button>
-            <Text
-              className={styles.mintLabel}
-            >{`${tokensMinted}/10000 Minted`}</Text>
-          </VStack>
-        )}
       </VStack>
       <VStack className={styles.gridContainer}>
-        {tokensMinted == 0 ? (
-          <VStack height="70vh" justifyContent="center">
-            <Text>No tokens minted yet</Text>
-          </VStack>
-        ) : (
-          <SimpleGrid columns={4} w="100%" gap={3}>
-            {collection.tokens
-              .slice(0, tokensMinted)
-              .map(({ image, name, owner, id }, idx) => (
-                <VStack key={idx} className={styles.tokenCardContainer}>
-                  <Image
-                    alt={name}
-                    src={image}
-                    className={styles.tokenImage}
-                  ></Image>
-                  <VStack w="100%" padding="4px 12px 2px 12px">
-                    <HStack w="100%" justifyContent="space-between">
-                      <Text className={styles.tokenTitle}>{name}</Text>
-                      <Text className={styles.tokenId}>{`ID: ${id}`}</Text>
-                    </HStack>
-                    <HStack w="100%">
-                      <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
-                      <Text className={styles.tokenOwner}>
-                        {abridgeAddress(owner)}
-                      </Text>
-                    </HStack>
-                  </VStack>
-                </VStack>
-              ))}
-          </SimpleGrid>
-        )}
+        <SimpleGrid columns={4} w="100%" gap={3}>
+          {collection.tokens.map(({ image, name, owner, id }, idx) => (
+            <VStack key={idx} className={styles.tokenCardContainer}>
+              <Image
+                alt={name}
+                src={image}
+                className={styles.tokenImage}
+              ></Image>
+              <VStack w="100%" padding="4px 12px 2px 12px">
+                <HStack w="100%" justifyContent="space-between">
+                  <Text className={styles.tokenTitle}>{name}</Text>
+                  <Text className={styles.tokenId}>{`ID: ${
+                    collection.tokens.length - idx
+                  }`}</Text>
+                </HStack>
+                <HStack w="100%">
+                  <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
+                  <Text className={styles.tokenOwner}>
+                    {abridgeAddress(owner)}
+                  </Text>
+                </HStack>
+              </VStack>
+            </VStack>
+          ))}
+        </SimpleGrid>
       </VStack>
     </HStack>
   );

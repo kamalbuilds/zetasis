@@ -33,12 +33,6 @@ export const mantle = {
     },
     default: { name: "Wadsley", url: "https://explorer.testnet.mantle.xyz/" },
   },
-  // contracts: {
-  //   multicall3: {
-  //     address: "0xca11bde05977b3631167028862be2a173976ca11",
-  //     blockCreated: 11_907_934,
-  //   },
-  // },
 } as const satisfies Chain;
 
 const { chains, provider } = configureChains([mantle], [publicProvider()]);
@@ -100,6 +94,11 @@ const theme = extendTheme({
       "*": {
         fontFamily: "Inter",
         color: "white",
+      },
+      a: {
+        _hover: {
+          textDecoration: "none !important",
+        },
       },
     },
   },
