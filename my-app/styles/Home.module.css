@@ -148,7 +148,8 @@
 }
 
 .description {
-  width: 300px;
+  font-size: 14px;
+  width: 260px;
   text-align: center;
   padding-bottom: 1rem;
 }

@@ -74,7 +74,7 @@
   padding: 1rem 0;
   font-weight: 400;
   font-size: 16px;
-  line-height: 17px;
+  line-height: 20px;
 }
 
 .explorerIcon {
@@ -158,8 +158,8 @@
 
 .tokenTitle {
   font-weight: 700;
-  font-size: 16px;
-  line-height: 16px;
+  font-size: 14px;
+  line-height: 14px;
 }
 
 .tokenId {

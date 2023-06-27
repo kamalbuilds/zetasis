@@ -95,6 +95,7 @@
 }
 
 .tokenDetailContainer {
+  width: 100%;
   align-items: flex-start !important;
   padding: 1rem 2rem 0 2rem;
 }

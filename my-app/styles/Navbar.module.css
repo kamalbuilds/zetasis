@@ -16,3 +16,23 @@
 .navLeftSection {
   gap: 1rem;
 }
+
+.button {
+  font-weight: 400 !important;
+  width: 200px !important;
+  height: 46px !important;
+  background: linear-gradient(black, black) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.button:hover {
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 1;
+}
