@@ -14,12 +14,14 @@
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "ethers": "^5.7.2",
+    "firebase": "^9.17.1",
     "framer-motion": "^6.5.1",
     "next": "13.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-lottie": "^1.2.3",
-    "wagmi": "^0.11.6"
+    "wagmi": "^0.11.6",
+    "web3.storage": "^4.4.0"
   },
   "devDependencies": {
     "@types/node": "18.14.0",

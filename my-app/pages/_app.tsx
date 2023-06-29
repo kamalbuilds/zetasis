@@ -82,7 +82,7 @@ const custom = definePartsStyle({
   },
 });
 
-const switchTheme = defineMultiStyleConfig({ baseStyle });
+const switchTheme = defineMultiStyleConfig({ variants: { custom } });
 
 const accordionTheme = defineMultiStyleConfig({
   variants: { custom },
