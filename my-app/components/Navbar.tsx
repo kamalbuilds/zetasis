@@ -1,10 +1,23 @@
 import Link from "next/link";
 import styles from "@styles/Navbar.module.css";
-import { HStack, Image, Text } from "@chakra-ui/react";
-import { useAccount } from "wagmi";
+import { Button, HStack, Image, Spinner, Text } from "@chakra-ui/react";
+import { useAccount, useDisconnect } from "wagmi";
+import { abridgeAddress } from "@utils/abridgeAddress";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
+  const router = useRouter();
   const { address } = useAccount();
+  const { disconnect, isLoading } = useDisconnect();
+
+  const [isHover, setIsHover] = useState<boolean>(false);
+
+  function handleDisconnect() {
+    disconnect();
+    router.push("/");
+    setIsHover(false);
+  }
 
   return (
     <HStack className={styles.navbar}>
@@ -16,6 +29,23 @@ const Navbar = () => {
           className={styles.logo}
         ></Image>
       </Link>
+
+      {address && (
+        <Button
+          className={styles.button}
+          onClick={handleDisconnect}
+          onMouseEnter={() => setIsHover(true)}
+          onMouseLeave={() => setIsHover(false)}
+        >
+          {isLoading ? (
+            <Spinner color="white" />
+          ) : isHover ? (
+            "DISCONNECT"
+          ) : (
+            abridgeAddress(address)
+          )}
+        </Button>
+      )}
     </HStack>
   );
 };
