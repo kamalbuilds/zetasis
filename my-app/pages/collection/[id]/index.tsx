@@ -17,6 +17,7 @@ import {
   useContractRead,
   useContractWrite,
   usePrepareContractWrite,
+  useProvider,
 } from "wagmi";
 import NewNFT from "@data/NewNFT.json";
 import SilicateNFT from "@data/SilicateNFT.json";
@@ -24,6 +25,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SuccessLottie from "@components/SuccessLottie";
+import { ethers } from "ethers";
 
 function Collection() {
   const router = useRouter();
@@ -90,7 +92,8 @@ function Collection() {
   });
 
   const fetchTokens = useCallback(async () => {
-    if (!baseURI) return;
+    if (!collectionAddress) return;
+
     const fetchedTokens = [];
     for (let i = 1; i <= lastTokenId; i++) {
       const response = await fetch(`${baseURI}/${1}` as string);
@@ -98,17 +101,18 @@ function Collection() {
       fetchedTokens.push(result);
     }
     setTokens(fetchedTokens);
-  }, [baseURI, lastTokenId]);
+  }, [baseURI, collectionAddress, lastTokenId]);
 
   useEffect(() => {
     if (!collectionMetadata) {
       fetchCollection();
     }
-    if (tokens.length === 0) {
+    if (collectionAddress && tokens.length === 0) {
       fetchTokens();
     }
   }, [
     baseURI,
+    collectionAddress,
     collectionMetadata,
     fetchCollection,
     fetchTokens,
@@ -126,7 +130,12 @@ function Collection() {
   );
 
   if (collectionAddress === "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2") {
-    return <SampleCollection id={collectionAddress} />;
+    return (
+      <SampleCollection
+        collectionAddress={collectionAddress}
+        lastTokenId={lastTokenId}
+      />
+    );
   }
 
   if (!collectionMetadata)
@@ -163,7 +172,7 @@ function Collection() {
             >
               <Button className={styles.successButton}>View transaction</Button>
             </ChakraLink>
-            <Link href={`/collection/${collectionAddress}/${navigationLink}`}>
+            <Link href={navigationLink}>
               <Button className={styles.successButton}>View token</Button>
             </Link>
           </HStack>
@@ -240,7 +249,7 @@ function Collection() {
           </VStack>
         ) : (
           <SimpleGrid columns={4} w="100%" gap={3}>
-            {tokens.map(({ image, name }, idx) => (
+            {[...tokens].map(({ image, name }, idx) => (
               <Link
                 href={`/collection/${collectionAddress}/${idx + 1}`}
                 key={idx}
@@ -273,8 +282,35 @@ function Collection() {
   );
 }
 
-function SampleCollection({ id }) {
-  const collection = collections[id as string];
+function SampleCollection({ collectionAddress, lastTokenId }) {
+  const collection = collections[collectionAddress as string];
+  const provider = useProvider();
+  const [tokens, setTokens] = useState([]);
+
+  const contract = new ethers.Contract(
+    collectionAddress as string,
+    SilicateNFT.abi,
+    provider
+  );
+
+  useEffect(() => {
+    if (tokens.length === 0) {
+      fetchTokens();
+    }
+  });
+
+  async function fetchTokens() {
+    const fetchedTokens = [];
+    for (let i = 17; i <= lastTokenId; i++) {
+      const tokenURI = await contract.tokenURI(i);
+      const owner = await contract.ownerOf(i);
+      const response = await fetch(tokenURI as string);
+      const result = await response.json();
+
+      fetchedTokens.push({ ...result, owner, id: i });
+    }
+    setTokens(fetchedTokens);
+  }
 
   return (
     <HStack className={styles.main}>
@@ -323,29 +359,29 @@ function SampleCollection({ id }) {
       </VStack>
       <VStack className={styles.gridContainer}>
         <SimpleGrid columns={4} w="100%" gap={3}>
-          {collection.tokens.map(({ image, name, owner, id }, idx) => (
-            <VStack key={idx} className={styles.tokenCardContainer}>
-              <Image
-                alt={name}
-                src={image}
-                className={styles.tokenImage}
-              ></Image>
-              <VStack w="100%" padding="4px 12px 2px 12px">
-                <HStack w="100%" justifyContent="space-between">
-                  <Text className={styles.tokenTitle}>{name}</Text>
-                  <Text className={styles.tokenId}>{`ID: ${
-                    collection.tokens.length - idx
-                  }`}</Text>
-                </HStack>
-                <HStack w="100%">
-                  <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
-                  <Text className={styles.tokenOwner}>
-                    {abridgeAddress(owner)}
-                  </Text>
-                </HStack>
+          {[...tokens, ...collection.tokens].map(
+            ({ image, name, owner, id }, idx) => (
+              <VStack key={idx} className={styles.tokenCardContainer}>
+                <Image
+                  alt={name}
+                  src={image}
+                  className={styles.tokenImage}
+                ></Image>
+                <VStack w="100%" padding="4px 12px 2px 12px">
+                  <HStack w="100%" justifyContent="space-between">
+                    <Text className={styles.tokenTitle}>{name}</Text>
+                    <Text className={styles.tokenId}>{`ID: ${id}`}</Text>
+                  </HStack>
+                  <HStack w="100%">
+                    <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
+                    <Text className={styles.tokenOwner}>
+                      {abridgeAddress(owner)}
+                    </Text>
+                  </HStack>
+                </VStack>
               </VStack>
-            </VStack>
-          ))}
+            )
+          )}
         </SimpleGrid>
       </VStack>
     </HStack>

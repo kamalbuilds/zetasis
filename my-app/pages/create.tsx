@@ -634,7 +634,7 @@ function CreateCollection() {
             <HStack w="100%" justifyContent="space-between">
               <VStack>
                 <Text>Create mint drop</Text>
-                <Switch size="lg" colorScheme="blue" />
+                <Switch size="lg" colorScheme="blue" variant="custom" />
               </VStack>
               <Button className={styles.button} onClick={deployContract}>
                 {isLoading ? <Spinner color="white" /> : "CREATE"}

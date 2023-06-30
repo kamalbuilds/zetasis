@@ -12,26 +12,11 @@ import {
 import Link from "next/link";
 import withTransition from "@components/withTransition";
 import { useAccount, useConnect } from "wagmi";
-import { useCallback, useEffect } from "react";
-import { fetchUser, createUser } from "@utils/web3";
 
 const Home: NextPage = () => {
   const { connector, isConnected, address } = useAccount();
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
-
-  // const createNewUser = useCallback(async () => {
-  //   const fetchedUser = await fetchUser(address);
-  //   if (!fetchedUser) {
-  //     await createUser(address);
-  //   }
-  // }, [address]);
-
-  // useEffect(() => {
-  //   if (isConnected) {
-  //     createNewUser();
-  //   }
-  // });
 
   return (
     <div className={styles.container}>
