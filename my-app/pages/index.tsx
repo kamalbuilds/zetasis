@@ -20,18 +20,18 @@ const Home: NextPage = () => {
   const { connect, connectors, error, isLoading, pendingConnector } =
     useConnect();
 
-  const createNewUser = useCallback(async () => {
-    const fetchedUser = await fetchUser(address);
-    if (!fetchedUser) {
-      await createUser(address);
-    }
-  }, [address]);
+  // const createNewUser = useCallback(async () => {
+  //   const fetchedUser = await fetchUser(address);
+  //   if (!fetchedUser) {
+  //     await createUser(address);
+  //   }
+  // }, [address]);
 
-  useEffect(() => {
-    if (isConnected) {
-      createNewUser();
-    }
-  });
+  // useEffect(() => {
+  //   if (isConnected) {
+  //     createNewUser();
+  //   }
+  // });
 
   return (
     <div className={styles.container}>

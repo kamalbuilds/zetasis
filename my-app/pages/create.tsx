@@ -166,14 +166,14 @@ function CreateToken() {
     console.log("TokenMetadata successfully uploaded to IPFS: ", uploadedJSON);
     const nftResult = await handleMint(uploadedJSON);
 
-    if (nftResult) {
-      await createAsset(
-        NFT_ADDRESS,
-        (parseInt(lastTokenId as string, 10) + 1).toString(),
-        metadata,
-        address
-      );
-    }
+    // if (nftResult) {
+    //   await createAsset(
+    //     NFT_ADDRESS,
+    //     (parseInt(lastTokenId as string, 10) + 1).toString(),
+    //     metadata,
+    //     address
+    //   );
+    // }
     setLoading(false);
   }
 
