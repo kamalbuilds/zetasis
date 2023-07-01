@@ -1,4 +1,4 @@
-# Silicate Tutorial: How to create your own NFT Metadata
+# Zetasis Tutorial: How to create your own NFT Metadata
 
 You can learn all about creating your own NFT metadata base URI here. A Base URI is simply a URI that points to where your NFT collection's entire token metadata map is stored. See the following example to better understand what the JSON object looks like:
 

@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const fs = require("fs");
 
 async function main() {
-  const SilicateNFT = await hre.ethers.getContractFactory("SilicateNFT");
+  const ZetasisNFT = await hre.ethers.getContractFactory("ZetasisNFT");
 
   const ROYALTY_RECEIVER_ADDR = process.env.ROYALTY_RECEIVER_ADDR;
 
@@ -11,22 +11,22 @@ async function main() {
     return;
   }
 
-  const deployedContract = await SilicateNFT.deploy(ROYALTY_RECEIVER_ADDR);
+  const deployedContract = await ZetasisNFT.deploy(ROYALTY_RECEIVER_ADDR);
 
   await deployedContract.deployed();
 
-  console.log("SilicateNFT deployed to:", deployedContract.address);
+  console.log("ZetasisNFT deployed to:", deployedContract.address);
 
   fs.copyFile(
-    "artifacts/contracts/nft.sol/SilicateNFT.json",
-    "../frontend/basic/data/SilicateNFT.json",
+    "artifacts/contracts/nft.sol/ZetasisNFT.json",
+    "../frontend/basic/data/ZetasisNFT.json",
     (err) => {
       if (err) {
         console.log("Error Found:", err);
       } else {
         console.log(
           "\nCopied ABI file:",
-          fs.readFileSync("../frontend/basic/data/SilicateNFT.json", "utf8")
+          fs.readFileSync("../frontend/basic/data/ZetasisNFT.json", "utf8")
         );
       }
     }

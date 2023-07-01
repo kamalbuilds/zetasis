@@ -4,12 +4,12 @@ const hre = require("hardhat");
 async function main() {
   const NUM_TOKENS = 5; // modifty as needed
 
-  const SilicateNFT = await hre.ethers.getContractFactory("SilicateNFT");
+  const ZetasisNFT = await hre.ethers.getContractFactory("ZetasisNFT");
 
-  const nft = await SilicateNFT.attach(
+  const nft = await ZetasisNFT.attach(
     process.env.CONTRACT_ADDRESS // deployed contract address
   );
-  console.log("SilicateNFT attached to:", nft.address);
+  console.log("ZetasisNFT attached to:", nft.address);
 
   console.log("reserveTokens...");
 

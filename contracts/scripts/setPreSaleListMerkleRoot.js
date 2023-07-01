@@ -9,11 +9,11 @@ async function main() {
     "presaleList"
   );
 
-  const SilicateNFT = await hre.ethers.getContractFactory("SilicateNFT");
-  const nft = await SilicateNFT.attach(
+  const ZetasisNFT = await hre.ethers.getContractFactory("ZetasisNFT");
+  const nft = await ZetasisNFT.attach(
     process.env.CONTRACT_ADDRESS // deployed contract address
   );
-  console.log("SilicateNFT attached to:", nft.address);
+  console.log("ZetasisNFT attached to:", nft.address);
 
   console.log("Setting presale list merkle root...");
 
