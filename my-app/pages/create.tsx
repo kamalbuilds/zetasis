@@ -86,7 +86,7 @@ function CreateToken() {
   }
 
   const NFT_ADDRESS =
-    process.env.NEXT_PUBLIC_NEXUS_COLLECTION_ADDRESS ??
+    process.env.NEXT_PUBLIC_SILICATE_COLLECTION_ADDRESS ??
     "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2";
 
   async function uploadImage() {
@@ -400,7 +400,7 @@ function CreateCollection() {
   }
 
   const NFT_ADDRESS =
-    process.env.NEXT_PUBLIC_NEXUS_COLLECTION_ADDRESS ??
+    process.env.NEXT_PUBLIC_SILICATE_COLLECTION_ADDRESS ??
     "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2";
 
   async function uploadImage() {
