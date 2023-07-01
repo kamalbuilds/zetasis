@@ -182,9 +182,7 @@ function Collection() {
   const navigationLink = useMemo(
     () =>
       goerliLastTokenId
-        ? `/collection/${goerliContractAddress}/${
-            parseInt(goerliLastTokenId as string, 10) + 1
-          }`
+        ? `/collection/${goerliContractAddress}/${goerliLastTokenId}`
         : `/collection/${goerliContractAddress}`,
     [goerliContractAddress, goerliLastTokenId]
   );
@@ -240,12 +238,12 @@ function Collection() {
         <VStack className={styles.detailContentContainer}>
           <Image
             alt="zetasis collection"
-            src={goerliMetadata.image}
+            src={(goerliMetadata as any).image}
             className={styles.collectionCover}
           ></Image>
           <Text className={styles.owner}></Text>
           <Text className={styles.description}>
-            {goerliMetadata.description}
+            {(goerliMetadata as any).description}
           </Text>
           <HStack gap={1}>
             <ChakraLink
