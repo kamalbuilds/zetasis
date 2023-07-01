@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.sol";
 import "@zetachain/protocol-contracts/contracts/evm/tools/ZetaInteractor.sol";
 
-interface ZetasisNFTErrors {
+interface NewNFTErrors {
     error InvalidMessageType();
 
     error InvalidTransferCaller();
@@ -16,12 +16,7 @@ interface ZetasisNFTErrors {
     error ErrorApprovingZeta();
 }
 
-contract ZetasisNFT is
-    ERC721("ZetasisNFT", "ZNFT"),
-    ZetaInteractor,
-    ZetaReceiver,
-    ZetasisNFTErrors
-{
+contract NewNFT is ERC721, ZetaInteractor, ZetaReceiver, NewNFTErrors {
     using Counters for Counters.Counter;
     using Strings for uint256;
 
@@ -40,6 +35,8 @@ contract ZetasisNFT is
 
     ZetaTokenConsumer private immutable _zetaConsumer;
 
+    uint256 public immutable MAX_TOTAL_SUPPLY;
+
     // Events
     event Mint(address indexed minter);
 
@@ -52,19 +49,24 @@ contract ZetasisNFT is
         address connectorAddress,
         address zetaTokenAddress,
         address zetaConsumerAddress,
-        bool useEven
-    ) ZetaInteractor(connectorAddress) {
+        bool useEven,
+        string memory _name,
+        string memory _symbol,
+        string memory _baseURI,
+        string memory _collectionURI,
+        uint256 _tokenSupply
+    ) ERC721(_name, _symbol) ZetaInteractor(connectorAddress) {
         _zetaToken = IERC20(zetaTokenAddress);
         _zetaConsumer = ZetaTokenConsumer(zetaConsumerAddress);
+        MAX_TOTAL_SUPPLY = _tokenSupply;
+        collectionURI = _collectionURI;
+        baseURI = _baseURI;
     }
 
-    // Function to mint a new token with specified URI
-    function mint(string memory _tokenURI)
-        external
-    {
+    // Function to mint a new token
+    function mint() external {
         uint256 tokenId = nextTokenId();
         _safeMint(msg.sender, tokenId);
-        setTokenURI(tokenId, _tokenURI);
 
         emit Mint(msg.sender);
     }
@@ -75,19 +77,13 @@ contract ZetasisNFT is
     }
 
     // Function to get the URI of a token
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override
-        returns (string memory)
-    {
+    function tokenURI(
+        uint256 tokenId
+    ) public view override returns (string memory) {
         if (bytes(_tokenURIs[tokenId]).length != 0) {
             return _tokenURIs[tokenId];
         } else {
-            return
-                string(
-                    abi.encodePacked(baseURI, "/", tokenId.toString(), ".json")
-                );
+            return string(abi.encodePacked(baseURI, tokenId.toString()));
         }
     }
 
@@ -170,7 +166,7 @@ contract ZetasisNFT is
     function _mintId(address to, uint256 tokenId) internal {
         _safeMint(to, tokenId);
         string memory uri = tokenURI(tokenId);
-        if(bytes(uri).length > 0) {
+        if (bytes(uri).length > 0) {
             setTokenURI(tokenId, uri);
         }
     }

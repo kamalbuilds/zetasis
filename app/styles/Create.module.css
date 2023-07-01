@@ -109,7 +109,7 @@
 }
 
 .successButton {
-  width: 200px !important;
+  width: 240px !important;
   height: 50px !important;
   background: linear-gradient(black, black) padding-box,
     linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
@@ -289,12 +289,12 @@
 }
 
 .uploadInput[type="file"] {
-  color: transparent;
+  color: transparent !important;
 }
 
 .uploadTextContainer {
   position: absolute;
-  top: 130px;
+  top: 150px;
   width: 100%;
   justify-content: space-between;
   padding: 0 3rem;
@@ -352,4 +352,152 @@
   cursor: pointer;
   width: 400px;
   height: 400px;
+}
+
+.modalContent {
+  max-width: 800px !important;
+
+  background-color: #000000 !important;
+  border: 1px solid #211e27;
+  border-radius: 25px !important;
+  padding: 1rem 0 2rem 0;
+}
+
+.modalHeader {
+  text-align: center;
+}
+
+.modalContentContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.modalOverlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+}
+
+.modalBody {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 0 2rem;
+}
+
+.modalBtn {
+  background-color: black !important;
+  border: 1px solid #211e27 !important;
+  border-radius: 10px !important;
+}
+
+.circle {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center !important;
+  align-items: center !important;
+  background: linear-gradient(rgb(12, 12, 12), rgb(12, 12, 12)) padding-box,
+    linear-gradient(
+        to bottom right,
+        rgb(209, 209, 209),
+        rgb(79, 79, 79),
+        rgb(28, 28, 28)
+      )
+      border-box !important;
+  border-radius: 20px !important;
+  border: 1px solid transparent !important;
+  z-index: 2;
+}
+
+.deployContainer {
+  position: relative;
+}
+
+.dividers {
+  position: absolute;
+  height: 1px;
+  width: 550px;
+  top: 50px;
+  left: 100px;
+}
+.space1 {
+  height: 1px;
+  width: 15px;
+  background-color: black;
+}
+.dividerLine {
+  height: 1px;
+  width: 110px;
+  background: linear-gradient(
+    90deg,
+    #000 0%,
+    #848484 25%,
+    #848484 75%,
+    #000 100%
+  );
+}
+.space2 {
+  height: 1px;
+  width: 70px;
+  background-color: black;
+}
+.space3 {
+  height: 1px;
+  width: 70px;
+  background-color: black;
+}
+.space4 {
+  height: 1px;
+  width: 15px;
+  background-color: black;
+}
+
+.stepContainer {
+  padding-left: 20px;
+  padding-right: 20px;
+  transition: all 0.3s;
+}
+
+.selectBox {
+  width: 550px;
+  height: 75px;
+  padding: 1rem;
+  border-radius: 15px;
+  border: 2px solid black !important;
+  cursor: pointer;
+}
+
+.selectionContainer {
+  position: absolute;
+  background: black;
+  z-index: 1;
+  bottom: 45px;
+  width: 420px;
+  height: 150px;
+  overflow-y: scroll;
+  padding: 0.5rem;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  user-select: none;
+}
+
+.selectionBox {
+  width: 420px;
+  padding: 0.5rem 1.5rem;
+}
+
+.countriesBox {
+  width: 550px;
+  padding: 1rem 2rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.selectedContainer {
+  padding-left: 1rem;
+  width: 450px;
+  overflow-x: scroll;
 }

@@ -1,30 +1,3 @@
-// import { task } from "hardhat/config";
-// import { HardhatRuntimeEnvironment } from "hardhat/types";
-
-// const contractName = "Withdraw";
-
-// const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
-//   if (hre.network.name !== "athens") {
-//     throw new Error(
-//       '🚨 Please use the "athens" network to deploy to ZetaChain.'
-//     );
-//   }
-
-//   const [signer] = await hre.ethers.getSigners();
-//   console.log(`🔑 Using account: ${signer.address}\n`);
-
-//   const factory = await hre.ethers.getContractFactory(contractName);
-//   const contract = await factory.deploy();
-//   await contract.deployed();
-
-//   console.log(`🚀 Successfully deployed contract on ZetaChain.
-// 📜 Contract address: ${contract.address}
-// 🌍 Explorer: https://explorer.zetachain.com/address/${contract.address}
-// `);
-// };
-
-// task("deploy", "Deploy the contract").setAction(main);
-
 import { getAddress, getChainId } from "@zetachain/addresses";
 import { ethers } from "ethers";
 import { task } from "hardhat/config";
@@ -76,7 +49,6 @@ const deployContract = async (
     networkName,
     zetaNetwork,
   });
-
   const zetaTokenConsumerV2 = getAddress({
     address: "zetaTokenConsumerUniV2",
     networkName,
@@ -87,9 +59,6 @@ const deployContract = async (
     networkName,
     zetaNetwork,
   });
-  console.log("zetaTokenAddress: ", zetaTokenAddress);
-  console.log("zetaTokenConsumerV2: ", zetaTokenConsumerV2);
-  console.log("zetaTokenConsumerV3: ", zetaTokenConsumerV3);
 
   const { abi, bytecode } = await hre.artifacts.readArtifact(contractName);
   const factory = new ethers.ContractFactory(abi, bytecode, wallet);
@@ -102,9 +71,9 @@ const deployContract = async (
 
   await contract.deployed();
   console.log(`
-🚀 Successfully deployed contract on ${networkName}.
-📜 Contract address: ${contract.address}
-`);
+  🚀 Successfully deployed contract on ${networkName}.
+  📜 Contract address: ${contract.address}
+  `);
   return contract.address;
 };
 

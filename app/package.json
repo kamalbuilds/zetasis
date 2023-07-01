@@ -13,6 +13,7 @@
     "@chakra-ui/react": "^2.3.5",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@zetachain/addresses": "^0.0.11",
     "ethers": "^5.7.2",
     "firebase": "^9.17.1",
     "framer-motion": "^6.5.1",

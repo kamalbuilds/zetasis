@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
 
-import "@openzeppelin/contracts/interfaces/~IERC20.sol";
-import "@openzeppelin/contracts/token/ERC721/~ERC721.sol";
-import "@openzeppelin/contracts/utils/~Counters.sol";
-import "@openzeppelin/contracts/access/~Ownable.sol";
-import "@zetachain/protocol-contracts/contracts/evm/interfaces/~ZetaInterfaces.sol";
-import "@zetachain/protocol-contracts/contracts/evm/tools/~ZetaInteractor.sol";
+import "@openzeppelin/contracts/interfaces/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@zetachain/protocol-contracts/contracts/evm/interfaces/ZetaInterfaces.sol";
+import "@zetachain/protocol-contracts/contracts/evm/tools/ZetaInteractor.sol";
 
-interface ZetasisNFTErrors {
+interface CrossChainNFTErrors {
     error InvalidMessageType();
 
     error InvalidTransferCaller();
@@ -16,11 +16,11 @@ interface ZetasisNFTErrors {
     error ErrorApprovingZeta();
 }
 
-contract ZetasisNFT is
-    ERC721("ZetasisNFT", "ZNFT"),
+contract CrossChainNFT is
+    ERC721("CrossChainNFT", "CCNFT"),
     ZetaInteractor,
     ZetaReceiver,
-    ZetasisNFTErrors
+    CrossChainNFTErrors
 {
     using Counters for Counters.Counter;
     using Strings for uint256;

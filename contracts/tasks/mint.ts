@@ -10,7 +10,11 @@ const main = async (args: any, hre: HardhatRuntimeEnvironment) => {
   const factory = await hre.ethers.getContractFactory(contractName);
   const contract = factory.attach(args.contract);
 
-  const tx = await contract.connect(signer).mint(signer.address);
+  const tx = await contract
+    .connect(signer)
+    .mint(
+      "https://ipfs.io/ipfs/QmZcH4YvBVVRJtdn4RdbaqgspFU8gH6P9vomDpBVpAL3u4/1"
+    );
 
   const receipt = await tx.wait();
   const event = receipt.events?.find((event) => event.event === "Transfer");

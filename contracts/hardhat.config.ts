@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
     // },
     // "polygon-mumbai": {
     //   ...getHardhatConfigNetworks(PRIVATE_KEYS)["polygon-mumbai"], // Copy existing settings
-    //   gas: 20000000000000000, // Set the desired gas limit //20000000000000000 //20000000
+    //   url: "https://data-seed-prebsc-2-s1.binance.org:8545/",
     // },
   },
   solidity: "0.8.7",

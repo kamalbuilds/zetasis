@@ -78,7 +78,7 @@
 }
 
 .explorerIcon {
-  opacity: 0.9;
+  opacity: 0.5;
   width: 25px;
   height: 25px;
   transition: 0.2s ease-in-out;
@@ -203,4 +203,57 @@
 .mintLabel {
   font-size: 14px;
   opacity: 0.7;
+}
+
+.bridgeButton {
+  width: 100% !important;
+  height: 50px !important;
+  background: linear-gradient(rgb(20, 20, 20), rgb(20, 20, 20)) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.bridgeButton:hover {
+  opacity: 1;
+}
+
+.networkSelector {
+  width: 100% !important;
+  height: 50px !important;
+  background: linear-gradient(rgb(20, 20, 20), rgb(20, 20, 20)) padding-box,
+    linear-gradient(to bottom right, rgb(207, 207, 207), rgb(28, 28, 28))
+      border-box !important;
+  border-radius: 50px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.3s ease-in-out;
+  opacity: 0.7;
+  cursor: pointer;
+  outline: none !important;
+}
+
+.networkSelector:focus {
+  outline: none !important;
+}
+
+.networkSelector:hover {
+  opacity: 1;
+}
+
+.tokenImageContainer {
+  width: 100%;
+  position: relative;
+}
+
+.networkIcon {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+  top: 10px;
+  left: 10px;
+  opacity: 0.3;
 }

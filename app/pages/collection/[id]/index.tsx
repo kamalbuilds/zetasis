@@ -7,145 +7,198 @@ import {
   Link as ChakraLink,
   Spinner,
   Button,
+  Select,
 } from "@chakra-ui/react";
+import axios from "axios";
 import withTransition from "@components/withTransition";
-import { collections, tokens } from "@data/static";
 import styles from "@styles/Collection.module.css";
 import { abridgeAddress } from "@utils/abridgeAddress";
-import {
-  useAccount,
-  useContractRead,
-  useContractWrite,
-  usePrepareContractWrite,
-  useProvider,
-} from "wagmi";
+import { useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
 import NewNFT from "@data/NewNFT.json";
-import ZetasisNFT from "@data/ZetasisNFT.json";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import SuccessLottie from "@components/SuccessLottie";
 import { ethers } from "ethers";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 function Collection() {
   const router = useRouter();
   const { address } = useAccount();
-  const [collectionMetadata, setCollectionMetadata] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [tokens, setTokens] = useState<any[]>([]);
-  const { id: collectionAddress } = router.query;
 
-  const { config } = usePrepareContractWrite({
-    address:
-      (collectionAddress as `0x${string}`) ??
-      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: NewNFT.abi,
-    functionName: "mint()",
-  });
+  const { data: signer, isError } = useSigner();
 
-  const { data: collectionURI } = useContractRead({
-    address:
-      (collectionAddress as `0x${string}`) ??
-      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: NewNFT.abi,
-    functionName: "contractURI",
-  });
+  const { chain: currentNetwork } = useNetwork();
+  const [selectedNetwork, setSelectedNetwork] = useState<string>(
+    currentNetwork ? currentNetwork.id.toString() : "5"
+  );
+  const {
+    chains,
+    error,
+    isLoading: isNetworkLoading,
+    switchNetwork,
+  } = useSwitchNetwork();
+  const [txnHash, setTxnHash] = useState("");
 
-  const { data: baseURI } = useContractRead({
-    address:
-      (collectionAddress as `0x${string}`) ??
-      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: NewNFT.abi,
-    functionName: "getBaseURI",
-  });
+  const [goerliContractAddress, setGoerliContractAddress] =
+    useState<string>("");
+  const [goerliBaseURI, setGoerliBaseURI] = useState("");
+  const [goerliMetadata, setGoerliMetadata] = useState();
+  const [goerliTokens, setGoerliTokens] = useState([]);
+  const [goerliLastTokenId, setGoerliLastTokenId] = useState(0);
 
-  const { data, isSuccess, write: mint } = useContractWrite(config);
+  const [polygonContractAddress, setPolygonContractAddress] =
+    useState<string>("");
+  const [polygonBaseURI, setPolygonBaseURI] = useState("");
+  const [polygonMetadata, setPolygonMetadata] = useState();
+  const [polygonTokens, setPolygonTokens] = useState([]);
+  const [polygonLastTokenId, setPolygonLastTokenId] = useState(0);
 
-  function handleMint() {
-    console.log("mint:", mint);
+  const { id } = router.query;
+
+  const { NFT_ADDRESS, EXPLORER_URI } = useMemo(() => {
+    let NFT_ADDRESS;
+    let EXPLORER_URI;
+
+    switch (currentNetwork.id) {
+      case 5:
+        NFT_ADDRESS = goerliContractAddress;
+        EXPLORER_URI = "https://goerli.etherscan.io/tx/";
+        break;
+      case 80001:
+        NFT_ADDRESS = polygonContractAddress;
+        EXPLORER_URI = "https://mumbai.polygonscan.com/tx/";
+        break;
+      default:
+        NFT_ADDRESS =
+          process.env.NEXT_PUBLIC_ZETASIS_ADDRESS ??
+          "0x0e2ab2707482d6cfe2dc006f2ee4442aa1377d3f";
+        EXPLORER_URI = "https://explorer.athens.zetachain.com/cc/tx/";
+        break;
+    }
+
+    return { NFT_ADDRESS, EXPLORER_URI };
+  }, [currentNetwork.id, goerliContractAddress, polygonContractAddress]);
+
+  // MINTING
+  const mint = useCallback(async () => {
     setLoading(true);
-    mint();
-  }
+    try {
+      const contract = new ethers.Contract(NFT_ADDRESS, NewNFT.abi, signer);
+      const nftResult = await contract.mint();
+      setTxnHash(nftResult.hash);
+      return nftResult;
+    } catch (e) {
+      console.log(e);
+    }
+  }, [NFT_ADDRESS, signer]);
 
   const fetchCollection = useCallback(async () => {
-    if (!collectionURI) return;
-    const response = await fetch(collectionURI as string);
-    const result = await response.json();
+    if (id) {
+      try {
+        const res = await axios.get(`${API_URL}/collection/${id}`);
 
-    setCollectionMetadata(result);
-  }, [collectionURI]);
+        if (!res.data) return;
 
-  const { data: lastTokenId } = useContractRead({
-    address:
-      (collectionAddress as `0x${string}`) ??
-      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: NewNFT.abi,
-    functionName: "getLastTokenId",
-  });
+        const { goerli, polygon } = res.data;
 
-  const { data: tokenSupply } = useContractRead({
-    address:
-      (collectionAddress as `0x${string}`) ??
-      "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2",
-    abi: NewNFT.abi,
-    functionName: "MAX_TOTAL_SUPPLY",
-  });
+        setGoerliContractAddress(goerli);
+        setPolygonContractAddress(polygon);
 
-  const fetchTokens = useCallback(async () => {
-    if (!collectionAddress) return;
+        const goerliProvider = new ethers.providers.JsonRpcProvider(
+          "https://ethereum-goerli.publicnode.com"
+        );
+        const polygonProvider = new ethers.providers.JsonRpcProvider(
+          "https://rpc-mumbai.maticvigil.com"
+        );
 
-    const fetchedTokens = [];
-    for (let i = 1; i <= lastTokenId; i++) {
-      const response = await fetch(`${baseURI}/${1}` as string);
-      const result = await response.json();
-      fetchedTokens.push(result);
+        const goerliContract = new ethers.Contract(
+          goerli,
+          NewNFT.abi,
+          goerliProvider
+        );
+
+        const polygonContract = new ethers.Contract(
+          polygon,
+          NewNFT.abi,
+          polygonProvider
+        );
+
+        const goerliContractURI = await goerliContract.contractURI();
+        const goerliBaseURI = await goerliContract.getBaseURI();
+        const goerliLastTokenId = await goerliContract.getLastTokenId();
+        const polygonContractURI = await polygonContract.contractURI();
+        const polygonBaseURI = await polygonContract.getBaseURI();
+        const polygonLastTokenId = await polygonContract.getLastTokenId();
+
+        setGoerliBaseURI(goerliBaseURI);
+        setPolygonBaseURI(polygonBaseURI);
+
+        setGoerliLastTokenId(goerliLastTokenId);
+        setPolygonLastTokenId(polygonLastTokenId);
+
+        if (!goerliContractURI || !polygonContractURI) return;
+
+        const goerliRes = await fetch(goerliContractURI as string);
+        const goerliResult = await goerliRes.json();
+        setGoerliMetadata(goerliResult);
+
+        const polygonRes = await fetch(polygonContractURI as string);
+        const polygonResult = await polygonRes.json();
+        setPolygonMetadata(polygonResult);
+
+        const fetchedGoerliTokens = [];
+
+        for (let i = 1; i <= goerliLastTokenId; i++) {
+          const response = await fetch(`${goerliBaseURI}/${i}` as string);
+          const result = await response.json();
+          fetchedGoerliTokens.push(result);
+        }
+
+        setGoerliTokens(fetchedGoerliTokens);
+
+        const fetchedPolygonTokens = [];
+
+        for (let i = 1; i <= polygonLastTokenId; i++) {
+          const response = await fetch(`${polygonBaseURI}/${i}` as string);
+          const result = await response.json();
+          fetchedPolygonTokens.push(result);
+        }
+
+        setPolygonTokens(fetchedPolygonTokens);
+      } catch (err) {
+        console.error(err);
+      }
     }
-    setTokens(fetchedTokens);
-  }, [baseURI, collectionAddress, lastTokenId]);
+  }, [id]);
 
   useEffect(() => {
-    if (!collectionMetadata) {
-      fetchCollection();
-    }
-    if (collectionAddress && tokens.length === 0) {
-      fetchTokens();
-    }
-  }, [
-    baseURI,
-    collectionAddress,
-    collectionMetadata,
-    fetchCollection,
-    fetchTokens,
-    tokens.length,
-  ]);
+    fetchCollection();
+  }, [fetchCollection, id]);
 
   const navigationLink = useMemo(
     () =>
-      lastTokenId
-        ? `/collection/${collectionAddress}/${
-            parseInt(lastTokenId as string, 10) + 1
+      goerliLastTokenId
+        ? `/collection/${goerliContractAddress}/${
+            parseInt(goerliLastTokenId as string, 10) + 1
           }`
-        : `/collection/${collectionAddress}`,
-    [collectionAddress, lastTokenId]
+        : `/collection/${goerliContractAddress}`,
+    [goerliContractAddress, goerliLastTokenId]
   );
 
-  if (collectionAddress === "0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2") {
-    return (
-      <SampleCollection
-        collectionAddress={collectionAddress}
-        lastTokenId={lastTokenId}
-      />
-    );
-  }
-
-  if (!collectionMetadata)
+  if (!goerliMetadata)
     return (
       <HStack className={styles.main} h="100vh">
-        <Spinner color="white" size="xl" />
+        <HStack alignItems="center" h="70vh">
+          <Spinner color="white" size="xl" />
+        </HStack>
       </HStack>
     );
 
-  if (isSuccess) {
+  if (txnHash) {
     return (
       <main className={styles.successContainer}>
         <VStack>
@@ -164,9 +217,9 @@ function Collection() {
           <HStack>
             <ChakraLink
               href={
-                data
-                  ? `https://explorer.athens.zetachain.com/cc/tx/${data.hash}`
-                  : "https://explorer.testnet.mantle.xyz"
+                txnHash
+                  ? `https://goerli.etherscan.io/tx/${txnHash}`
+                  : "https://goerli.etherscan.io"
               }
               isExternal
             >
@@ -187,19 +240,16 @@ function Collection() {
         <VStack className={styles.detailContentContainer}>
           <Image
             alt="zetasis collection"
-            src={collectionMetadata.image}
+            src={goerliMetadata.image}
             className={styles.collectionCover}
           ></Image>
-          <Text className={styles.title}>{collectionMetadata.name}</Text>
-          <Text className={styles.owner}>
-            {`by ${abridgeAddress(collectionMetadata.fee_recipient)}`}
-          </Text>
+          <Text className={styles.owner}></Text>
           <Text className={styles.description}>
-            {collectionMetadata.description}
+            {goerliMetadata.description}
           </Text>
           <HStack gap={1}>
             <ChakraLink
-              href={`https://explorer.athens.zetachain.com/address/${collectionAddress}`}
+              href={`https://explorer.athens.zetachain.com/address/${goerliContractAddress}`}
               isExternal
             >
               <Image
@@ -210,7 +260,7 @@ function Collection() {
             </ChakraLink>
             <ChakraLink
               href={
-                (baseURI as string) ??
+                (goerliBaseURI as string) ??
                 "https://bafybeiavfji7bfrip3dbg23laqgkwi7f2sntmp42tvr7qdecd2hw6a2zky.ipfs.w3s.link/1.json"
               }
               isExternal
@@ -230,36 +280,54 @@ function Collection() {
             </ChakraLink>
           </HStack>
         </VStack>
-        {lastTokenId < tokenSupply && (
-          <VStack w="100%">
-            <Button className={styles.mintButton} onClick={handleMint}>
-              {" "}
+        <VStack w="100%">
+          <HStack w="100%">
+            <Button onClick={mint} className={styles.mintButton}>
               {isLoading ? <Spinner color="white" /> : "MINT"}
             </Button>
-            <Text
-              className={styles.mintLabel}
-            >{`${lastTokenId}/10000 Minted`}</Text>
-          </VStack>
-        )}
+            <Select
+              value={currentNetwork ? currentNetwork.id : "5"}
+              className={styles.networkSelector}
+              onChange={(e) => {
+                const selectedChainId = Number(e.target.value);
+                if (selectedChainId !== currentNetwork.id) {
+                  switchNetwork(selectedChainId);
+                }
+              }}
+            >
+              <option value="5">Goerli</option>
+              <option value="80001">Polygon Mumbai</option>
+              {/* <option value="97">BSC Testnet</option> */}
+            </Select>
+          </HStack>
+          <Text className={styles.mintLabel}>{`${1}/10000 Minted`}</Text>
+        </VStack>
       </VStack>
       <VStack className={styles.gridContainer}>
-        {lastTokenId == 0 ? (
+        {goerliLastTokenId == 0 ? (
           <VStack height="70vh" justifyContent="center">
             <Text>No tokens minted yet</Text>
           </VStack>
         ) : (
           <SimpleGrid columns={4} w="100%" gap={3}>
-            {[...tokens].map(({ image, name }, idx) => (
+            {[...goerliTokens, ...polygonTokens].map(({ image, name }, idx) => (
               <Link
-                href={`/collection/${collectionAddress}/${idx + 1}`}
+                href={`/collection/${goerliContractAddress}/${idx + 1}`}
                 key={idx}
               >
                 <VStack className={styles.tokenCardContainer}>
-                  <Image
-                    alt={name}
-                    src={`https:ipfs.io/ipfs/${image.split("//")[1]}`}
-                    className={styles.tokenImage}
-                  ></Image>
+                  <VStack className={styles.tokenImageContainer}>
+                    <Image
+                      alt={name}
+                      src={`https:ipfs.io/ipfs/${image.split("//")[1]}`}
+                      className={styles.tokenImage}
+                    ></Image>
+                    <Image
+                      alt="token image"
+                      src="/goerli.png"
+                      className={styles.networkIcon}
+                    ></Image>
+                  </VStack>
                   <VStack w="100%" padding="4px 12px 2px 12px">
                     <HStack w="100%" justifyContent="space-between">
                       <Text className={styles.tokenTitle}>{name}</Text>
@@ -277,112 +345,6 @@ function Collection() {
             ))}
           </SimpleGrid>
         )}
-      </VStack>
-    </HStack>
-  );
-}
-
-function SampleCollection({ collectionAddress, lastTokenId }) {
-  const collection = collections[collectionAddress as string];
-  const provider = useProvider();
-  const [tokens, setTokens] = useState([]);
-
-  const contract = new ethers.Contract(
-    collectionAddress as string,
-    ZetasisNFT.abi,
-    provider
-  );
-
-  useEffect(() => {
-    if (tokens.length === 0) {
-      fetchTokens();
-    }
-  });
-
-  async function fetchTokens() {
-    const fetchedTokens = [];
-    for (let i = 17; i <= lastTokenId; i++) {
-      const tokenURI = await contract.tokenURI(i);
-      const owner = await contract.ownerOf(i);
-      const response = await fetch(tokenURI as string);
-      const result = await response.json();
-
-      fetchedTokens.push({ ...result, owner, id: i });
-    }
-    setTokens(fetchedTokens);
-  }
-
-  return (
-    <HStack className={styles.main}>
-      <VStack className={styles.detailContainer}>
-        <VStack className={styles.detailContentContainer}>
-          <Image
-            alt="zetasis collection"
-            src={collection.image}
-            className={styles.collectionCover}
-          ></Image>
-          <Text className={styles.title}>{collection.title}</Text>
-          <Text className={styles.owner}>
-            {`by ${abridgeAddress(collection.creator)}`}
-          </Text>
-          <Text className={styles.description}>{collection.description}</Text>
-          <HStack gap={1}>
-            <ChakraLink
-              href="https://explorer.athens.zetachain.com/address/0xB499Bc2AD48b86fd4AA9C94e081C213eDFD4bDf2"
-              isExternal
-            >
-              <Image
-                alt="explorer"
-                src="/explorer.png"
-                className={styles.explorerIcon}
-              ></Image>
-            </ChakraLink>
-            <ChakraLink
-              href="https://bafybeiavfji7bfrip3dbg23laqgkwi7f2sntmp42tvr7qdecd2hw6a2zky.ipfs.w3s.link/1.json"
-              isExternal
-            >
-              <Image
-                alt="ipfs"
-                src="/ipfs.png"
-                className={styles.ipfsIcon}
-              ></Image>
-            </ChakraLink>
-            <ChakraLink href="https://www.zetasis.dev/" isExternal>
-              <Image
-                alt="web"
-                src="/website.png"
-                className={styles.webIcon}
-              ></Image>
-            </ChakraLink>
-          </HStack>
-        </VStack>
-      </VStack>
-      <VStack className={styles.gridContainer}>
-        <SimpleGrid columns={4} w="100%" gap={3}>
-          {[...tokens, ...collection.tokens].map(
-            ({ image, name, owner, id }, idx) => (
-              <VStack key={idx} className={styles.tokenCardContainer}>
-                <Image
-                  alt={name}
-                  src={image}
-                  className={styles.tokenImage}
-                ></Image>
-                <VStack w="100%" padding="4px 12px 2px 12px">
-                  <HStack w="100%" justifyContent="space-between">
-                    <Text className={styles.tokenTitle}>{name}</Text>
-                    <Text className={styles.tokenId}>{`ID: ${id}`}</Text>
-                  </HStack>
-                  <HStack w="100%">
-                    <Text className={styles.tokenOwnerLabel}>OWNER:</Text>
-                    <Text className={styles.tokenOwner}>
-                      {abridgeAddress(owner)}
-                    </Text>
-                  </HStack>
-                </VStack>
-              </VStack>
-            )
-          )}
-        </SimpleGrid>
       </VStack>
     </HStack>
   );
