@@ -2,7 +2,7 @@
 
 `GET https://silicate-server-kt42.onrender.com/users/:address/assets`
 
-This endpoint returns a set of assets based on the specified user Aurora address.
+This endpoint returns a set of assets based on the specified user Mantle Network address.
 
 Sample request: [/users/0x6B4583438C24839ea459e34e9F21aD419A846B0b/assets](https://silicate-server-kt42.onrender.com/users/0x6B4583438C24839ea459e34e9F21aD419A846B0b/assets)
 
